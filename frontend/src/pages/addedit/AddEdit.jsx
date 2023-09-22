@@ -25,35 +25,23 @@ export const AddEdit = () => {
   }, [id]);
 
   const getSingleUser = async (id) => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_SERVER_URL}/users/${id}`);
-      if (res.status === 200) {
-        setData({ ...res.data });
-      }
-    } catch (error) {
-      console.error("Error fetching user:", error);
+    const res = await axios.get(`http://localhost:5000/users/${id}`);
+    if (res.status === 200) {
+      setData({ ...res.data });
     }
   };
 
   const createUser = async (data) => {
-    try {
-      const res = await axios.post(`${process.env.REACT_APP_SERVER_URL}/users/`, data);
-      if (res.status === 200) {
-        toast.success(res.data);
-      }
-    } catch (error) {
-      console.error("Error creating user:", error);
+    const res = await axios.post("http://localhost:5000/users/", data);
+    if (res.status === 200) {
+      toast.success(res.data);
     }
   };
 
   const updateUser = async (data, id) => {
-    try {
-      const res = await axios.put(`${process.env.REACT_APP_SERVER_URL}/users/${id}`, data);
-      if (res.status === 200) {
-        toast.success(res.data);
-      }
-    } catch (error) {
-      console.error("Error updating user:", error);
+    const res = await axios.put(`http://localhost:5000/users/${id}`, data);
+    if (res.status === 200) {
+      toast.success(res.data);
     }
   };
 
@@ -96,7 +84,7 @@ export const AddEdit = () => {
             type="email"
             id="email"
             name="email"
-            placeholder="Enter an email."
+            placeholder="Enter a email."
             onChange={handleInputChange}
             value={email}
           />

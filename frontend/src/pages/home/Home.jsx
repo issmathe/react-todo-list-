@@ -1,52 +1,73 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import "./view.css";
+import axios from "axios";
+import "./home.css";
+import { Link } from "react-router-dom";
 
-export const View = () => {
-  const [user, setUser] = useState({});
-  const { id } = useParams();
+export const Home = () => {
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (id) {
-      getSingleUser(id);
-    }
-  }, [id]);
+    getUsers();
+  }, []);
 
-  const getSingleUser = async (id) => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_SERVER_URL}/users/${id}`);
+  const getUsers = async () => {
+    const res = await axios.get("http://localhost:5000/users");
+    if (res.status === 200) {
+      setData(res.data);
+    }
+  };
+
+  const onDeleteUser = async (id) => {
+    if (window.confirm("Are you sure?")) {
+      const res = await axios.delete(`http://localhost:5000/users/${id}`);
       if (res.status === 200) {
-        setUser({ ...res.data });
+        getUsers();
       }
-    } catch (error) {
-      console.error("Error fetching user:", error);
     }
   };
 
   return (
-    <div className="view">
-      <div className="view-item">
-        <b>ID:</b> <span>{user.id}</span>
-      </div>
-      <div className="view-item">
-        <b>Name:</b> <span>{user.name}</span>
-      </div>
-      <div className="view-item">
-        <b>Email:</b> <span>{user.email}</span>
-      </div>
-      <div className="view-item">
-        <b>Country:</b> <span>{user.country}</span>
-      </div>
-      <div className="view-item">
-        <b>Contact:</b> <span>{user.contact}</span>
-      </div>
-      <Link to={`/update/${user.id}`}>
-        <button className="btn btn-success">Edit</button>
-      </Link>
-      <Link to={"/"}>
-        <button className="btn btn-primary">Back</button>
-      </Link>
+    <div className="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Country</th>
+            <th>Contact</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data &&
+            data.map((user, index) => (
+              <tr key={user.id}>
+                <td>{index + 1}</td>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.country}</td>
+                <td>{user.contact}</td>
+                <td>
+                  <div className="buttons">
+                    <Link to={`/view/${user.id}`} className="btn btn-primary">
+                      View
+                    </Link>
+                    <Link to={`/update/${user.id}`} className="btn btn-success">
+                      Edit
+                    </Link>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => onDeleteUser(user.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
     </div>
   );
 };
